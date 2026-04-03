@@ -30,7 +30,6 @@
     "@testing-library/user-event": "^14.0.0",
     "@vitest/ui": "^1.0.0",
     "jsdom": "^23.0.0",
-    "@types/vitest": "^1.0.0",
     "@vitejs/plugin-react": "^4.0.0"
   }
 }

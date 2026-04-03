@@ -67,7 +67,7 @@ describe('TodoItem', () => {
 
     render(<TodoItem todo={todo} onToggle={mockToggle} onDelete={mockDelete} />)
 
-    const todoText = screen.getByText('Test todo')
+    const todoText = screen.getByText(/Test todo/)
     expect(todoText).toHaveClass('line-through')
   })
 
@@ -78,7 +78,7 @@ describe('TodoItem', () => {
 
     render(<TodoItem todo={todo} onToggle={mockToggle} onDelete={mockDelete} />)
 
-    const todoText = screen.getByText('Test todo')
+    const todoText = screen.getByText(/Test todo/)
     expect(todoText).not.toHaveClass('line-through')
   })
 

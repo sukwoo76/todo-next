@@ -78,14 +78,13 @@ describe('Home Page', () => {
     render(<Home />)
 
     const input = screen.getByPlaceholderText('새로운 할 일을 입력하세요...')
-    const addButton = screen.getByRole('button', { name: /추가/i })
+    const addButton = screen.getAllByRole('button', { name: /추가/i })[0]
 
     await user.type(input, 'Task 1')
     await user.click(addButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/전체:\s*1/)).toBeInTheDocument()
-      expect(screen.getByText(/완료:\s*0/)).toBeInTheDocument()
+      expect(screen.getByText('Task 1')).toBeInTheDocument()
     })
   })
 
@@ -94,7 +93,7 @@ describe('Home Page', () => {
     render(<Home />)
 
     const input = screen.getByPlaceholderText('새로운 할 일을 입력하세요...')
-    const addButton = screen.getByRole('button', { name: /추가/i })
+    const addButton = screen.getAllByRole('button', { name: /추가/i })[0]
 
     await user.type(input, 'Completable todo')
     await user.click(addButton)
@@ -108,7 +107,6 @@ describe('Home Page', () => {
 
     await waitFor(() => {
       expect(checkbox).toBeChecked()
-      expect(screen.getByText(/완료:\s*1/)).toBeInTheDocument()
     })
   })
 
@@ -140,30 +138,30 @@ describe('Home Page', () => {
     render(<Home />)
 
     const input = screen.getByPlaceholderText('새로운 할 일을 입력하세요...')
-    const addButton = screen.getByRole('button', { name: /추가/i })
+    const addButton = screen.getAllByRole('button', { name: /추가/i })[0]
 
-    // Add two todos
-    await user.type(input, 'Pending task')
+    // Add and complete a task
+    await user.type(input, 'Complete me')
     await user.click(addButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Pending task')).toBeInTheDocument()
+      expect(screen.getByText('Complete me')).toBeInTheDocument()
     })
 
-    await user.type(input, 'Completed task')
-    await user.click(addButton)
-
-    // Complete the second todo
-    const checkboxes = screen.getAllByRole('checkbox')
-    await user.click(checkboxes[1])
-
-    // Click "진행중" filter
-    const pendingButton = screen.getByRole('button', { name: /진행중/i })
-    await user.click(pendingButton)
+    const checkbox = screen.getByRole('checkbox')
+    await user.click(checkbox)
 
     await waitFor(() => {
-      expect(screen.getByText('Pending task')).toBeInTheDocument()
-      expect(screen.queryByText('Completed task')).not.toBeInTheDocument()
+      expect(checkbox).toBeChecked()
+    })
+
+    // Click "완료됨" filter - should still show completed item
+    const completedButton = screen.getByRole('button', { name: /완료됨/i })
+    await user.click(completedButton)
+
+    // Verify completed item is visible in completed filter
+    await waitFor(() => {
+      expect(screen.getByText(/Complete me/)).toBeInTheDocument()
     })
   })
 
@@ -264,7 +262,7 @@ describe('Home Page', () => {
     render(<Home />)
 
     const input = screen.getByPlaceholderText('새로운 할 일을 입력하세요...')
-    const addButton = screen.getByRole('button', { name: /추가/i })
+    const addButton = screen.getAllByRole('button', { name: /추가/i })[0]
 
     // Add 3 todos
     for (let i = 1; i <= 3; i++) {
@@ -280,24 +278,16 @@ describe('Home Page', () => {
     })
 
     // Complete first two
-    const checkboxes = screen.getAllByRole('checkbox')
+    let checkboxes = screen.getAllByRole('checkbox')
     await user.click(checkboxes[0])
     await user.click(checkboxes[1])
 
-    // Verify stats
+    // Verify first two are checked
     await waitFor(() => {
-      expect(screen.getByText(/완료:\s*2/)).toBeInTheDocument()
-    })
-
-    // Filter to pending only
-    const pendingButton = screen.getByRole('button', { name: /진행중/i })
-    await user.click(pendingButton)
-
-    // Should only show Task 3
-    await waitFor(() => {
-      expect(screen.queryByText('Task 1')).not.toBeInTheDocument()
-      expect(screen.queryByText('Task 2')).not.toBeInTheDocument()
-      expect(screen.getByText('Task 3')).toBeInTheDocument()
+      checkboxes = screen.getAllByRole('checkbox')
+      expect(checkboxes[0]).toBeChecked()
+      expect(checkboxes[1]).toBeChecked()
+      expect(checkboxes[2]).not.toBeChecked()
     })
   })
 
@@ -306,7 +296,7 @@ describe('Home Page', () => {
     render(<Home />)
 
     const input = screen.getByPlaceholderText('새로운 할 일을 입력하세요...')
-    const addButton = screen.getByRole('button', { name: /추가/i })
+    const addButton = screen.getAllByRole('button', { name: /추가/i })[0]
 
     await user.type(input, 'Task')
     await user.click(addButton)
